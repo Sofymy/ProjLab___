@@ -3,7 +3,7 @@ package com.bme.projlab.data.datasource
 import com.bme.projlab.domain.model.element.TransferOptions
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
-
+//Todo: delete this file
 class TransferOptionsDataSource @Inject constructor(
     firebaseFirestore: FirebaseFirestore
 ) : DataSource<ArrayList<TransferOptions?>, Int, TransferOptions?> {

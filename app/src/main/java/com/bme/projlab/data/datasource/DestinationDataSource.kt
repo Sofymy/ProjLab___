@@ -7,6 +7,7 @@ import com.bme.projlab.domain.model.element.Destination
 import com.google.firebase.firestore.FirebaseFirestore
 import javax.inject.Inject
 
+//Todo: delete this file
 class DestinationDataSource @Inject constructor(
     firebaseFirestore: FirebaseFirestore
 ) : DataSource<ArrayList<Destination>, String, Destination?> {
