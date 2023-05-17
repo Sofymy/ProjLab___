@@ -1,0 +1,138 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id 'com.google.dagger.hilt.android'
+    id 'com.google.gms.google-services'
+}
+
+android {
+    compileSdk 33
+
+    def Properties properties = new Properties()
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
+    defaultConfig {
+        compileSdkPreview = "UpsideDownCake"
+        resValue "string", "KEY", properties.getProperty("AMADEUS_KEY", "")
+        resValue "string", "SECRET", properties.getProperty("AMADEUS_SECRET", "")
+
+        applicationId "com.bme.projlab"
+        minSdk 26
+        targetSdk 33
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        def CONFIG = { k -> "\"${project.properties.get(k)}\"" }
+
+        debug{
+            buildConfigField "String", "BASE_URL", "\"https://skyscanner50.p.rapidapi.com/api/v1/test/\""
+        }
+        release {
+            buildConfigField "String", "BASE_URL", "\"https://skyscanner50.p.rapidapi.com/api/v1/test/\""
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion compose_version
+        kotlinCompilerVersion '1.4.32'
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core-ktx:1.10.1'
+
+    //COMPOSE
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "com.google.accompanist:accompanist-pager:0.25.0" // Pager
+    implementation "com.google.accompanist:accompanist-pager-indicators:0.25.0" // Pager Indicators
+    implementation 'androidx.activity:activity-compose:1.8.0-alpha04'
+    implementation 'com.squaredem:composecalendar:1.0.0'
+    implementation "androidx.navigation:navigation-compose:2.6.0-rc01"
+    implementation "androidx.compose.ui:ui-tooling:$compose_version"
+    implementation "androidx.compose.ui:ui-util:$compose_version"
+    implementation "androidx.compose.runtime:runtime-livedata:$compose_version"
+    implementation 'com.google.firebase:firebase-auth-ktx:22.0.0'
+    implementation 'com.google.firebase:firebase-firestore-ktx:24.6.0'
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    def composeBom = platform('androidx.compose:compose-bom:2023.01.00')
+    implementation composeBom
+    androidTestImplementation composeBom
+
+    // Choose one of the following:
+    // Material Design 3
+    implementation 'androidx.compose.material3:material3'
+    implementation 'com.google.android.material:material:1.9.0'
+    implementation "androidx.compose.material:material:1.4.3"
+    implementation 'de.charlex.compose:bottom-drawer-scaffold:1.1.0-beta02'
+
+    // Android Studio Preview support
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+
+    // UI Tests
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
+    // HILT
+    implementation "com.google.dagger:hilt-android:2.45"
+    kapt "com.google.dagger:hilt-compiler:2.45"
+    implementation 'androidx.hilt:hilt-navigation-compose:1.1.0-alpha01'
+
+    //FIREBASE
+    implementation platform('com.google.firebase:firebase-bom:31.3.0')
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    implementation 'com.google.android.gms:play-services-auth:20.5.0'
+    implementation 'androidx.ui:ui-foundation:0.1.0-dev03'
+
+    //RETROFIT
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation "com.squareup.okhttp3:okhttp:5.0.0-alpha.2"
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    //AMADEUS
+    implementation 'com.amadeus:amadeus-android:1.3.1'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    //RETROFIT
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.5.0'
+
+    implementation 'com.sealwu.jsontokotlin:library:3.7.4'
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
+
+    //MAP UTL
+    implementation 'com.google.maps.android:android-maps-utils:0.4.4'
+
+}
+
+kapt {
+    correctErrorTypes true
+}
