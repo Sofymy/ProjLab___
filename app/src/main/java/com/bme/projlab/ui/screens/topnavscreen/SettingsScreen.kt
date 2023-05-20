@@ -1,4 +1,4 @@
-package com.bme.projlab.ui.screens.settings
+package com.bme.projlab.ui.screens.topnavscreen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
@@ -17,7 +17,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun SettingsScreen(viewModel: HomeViewModel = hiltViewModel()) {
+fun SettingsScreen(
+    viewModel: HomeViewModel = hiltViewModel())
+{
     val tabs = listOf(SettingsTabItems.SettingsNotifications,SettingsTabItems.SettingsAccount)
     val pagerState = rememberPagerState()
     Scaffold { padding ->

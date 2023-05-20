@@ -91,4 +91,8 @@ class UserRepositoryImpl @Inject constructor(
         return heartedTrips
     }
 
+    fun getUsername(): String? {
+        return firebaseAuth.currentUser?.displayName
+    }
+
 }

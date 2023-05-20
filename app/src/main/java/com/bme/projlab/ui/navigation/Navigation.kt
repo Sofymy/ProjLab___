@@ -22,7 +22,7 @@ import com.bme.projlab.ui.screens.searchscreen.SearchDestinationExactScreen
 import com.bme.projlab.ui.screens.searchscreen.SearchDestinationPreferencesScreen
 import com.bme.projlab.ui.screens.searchscreen.SearchFromScreen
 import com.bme.projlab.ui.screens.searchscreen.SearchResultsScreen
-import com.bme.projlab.ui.screens.settings.SettingsScreen
+import com.bme.projlab.ui.screens.topnavscreen.SettingsScreen
 import com.bme.projlab.ui.screens.topnavscreen.SettingsAccountScreen
 import com.bme.projlab.ui.screens.topnavscreen.SettingsNotificationsScreen
 import com.bme.projlab.ui.screens.signup.SignupScreen

@@ -85,43 +85,4 @@ object HiltModule {
     @Provides
     fun provideAirportRepository(airportDataSource: AirportDataSource): AirportRepository = AirportRepositoryImpl(airportDataSource)
 
-    @Provides
-    fun provideDataSourceRepositoryImpl(
-        airportDataSource: AirportDataSource,
-        accommodationDataSource: AccommodationDataSource,
-        destinationDataSource: DestinationDataSource,
-        flightDataSource: FlightDataSource,
-        transferInfoDataSource: TransferInfoDataSource,
-        transferOptionsDataSource: TransferOptionsDataSource,
-        tripDataSource: TripDataSource,
-        userDataSource: UserDataSource
-    ): DataSourceRepositoryImpl = DataSourceRepositoryImpl(
-        airportDataSource,
-        accommodationDataSource,
-        destinationDataSource,
-        flightDataSource,
-        transferInfoDataSource,
-        transferOptionsDataSource,
-        tripDataSource,
-        userDataSource
-    )
-
-    @Provides
-    fun provideDataSourceAccommodation(firebaseFirestore: FirebaseFirestore): AccommodationDataSource = AccommodationDataSource(firebaseFirestore)
-
-    @Provides
-    fun provideDataSourceDestination(firebaseFirestore: FirebaseFirestore): DestinationDataSource = DestinationDataSource(firebaseFirestore)
-
-    @Provides
-    fun provideDataSourceTransferInfo(firebaseFirestore: FirebaseFirestore): TransferInfoDataSource = TransferInfoDataSource(firebaseFirestore)
-
-    @Provides
-    fun provideDataSourceTransferOptions(firebaseFirestore: FirebaseFirestore): TransferOptionsDataSource = TransferOptionsDataSource(firebaseFirestore)
-
-    @Provides
-    fun provideDataSourceTrip(firebaseFirestore: FirebaseFirestore): TripDataSource = TripDataSource(firebaseFirestore)
-
-    @Provides
-    fun provideDataSourceUser(firebaseFirestore: FirebaseFirestore): UserDataSource = UserDataSource(firebaseFirestore)
-
 }

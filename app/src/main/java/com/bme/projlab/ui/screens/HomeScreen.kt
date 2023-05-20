@@ -6,6 +6,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.bme.projlab.domain.viewmodel.HomeViewModel
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel = hiltViewModel()) {
-    Text("Home")
+fun HomeScreen(
+    viewModel: HomeViewModel = hiltViewModel())
+{
+    viewModel.getUsername()?.let {
+        Text("Hello, $it!", style = MaterialTheme.typography.bodyLarge)
+    }
 }

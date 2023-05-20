@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.flow
 
 class FlightDataSource(
     private val apiInterface: ApiInterface
-) {
+): DataSource {
 
     suspend fun getFlights(origin: String,
                            destination: String,

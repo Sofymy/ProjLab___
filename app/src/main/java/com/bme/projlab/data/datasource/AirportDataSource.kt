@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class AirportDataSource @Inject constructor(
     private val apiInterface: ApiInterface
-){
+): DataSource{
     suspend fun loadAirports(city: String): ArrayList<Airports.Airport> {
         val response = apiInterface.getAirports(city)
         val airportCodes: ArrayList<String> = ArrayList()

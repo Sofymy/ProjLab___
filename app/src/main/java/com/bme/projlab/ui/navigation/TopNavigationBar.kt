@@ -68,12 +68,6 @@ fun TopNavigationBar(
 
     CenterAlignedTopAppBar(
         title = {
-            Text(
-                "Projlab",
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                color = Color.White
-            )
         },
         actions = {
             IconButton(onClick = {
