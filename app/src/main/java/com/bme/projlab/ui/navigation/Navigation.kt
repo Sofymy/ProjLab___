@@ -137,7 +137,12 @@ fun NavGraphBuilder.loggedinNavGraph(
             )
         }
         composable(Routes.Trips.route) {
-            TripsScreen()
+            TripsScreen {
+                navController.navigate(Routes.ReceivedTrips.route)
+                {
+                    launchSingleTop = true
+                }
+            }
         }
         composable(Routes.Search.route) {
             val fromAirport = "CDG"
