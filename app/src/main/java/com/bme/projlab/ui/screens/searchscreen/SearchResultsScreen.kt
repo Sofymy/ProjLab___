@@ -32,6 +32,8 @@ import com.bme.projlab.domain.model.element.Flights
 import com.bme.projlab.domain.model.element.Destination
 import com.bme.projlab.domain.model.element.Trip
 import com.bme.projlab.domain.viewmodel.SearchResultsViewModel
+import com.bme.projlab.ui.theme.Blue
+import com.bme.projlab.ui.theme.Purple
 import kotlinx.coroutines.launch
 
 @SuppressLint("MutableCollectionMutableState", "CoroutineCreationDuringComposition")
@@ -77,6 +79,7 @@ fun TripListItem(trip: Trip, viewModel: SearchResultsViewModel) {
     androidx.compose.material.Card(
         modifier = Modifier
             .padding(horizontal = 8.dp, vertical = 8.dp)
+            .height(70.dp)
             .fillMaxWidth()
             .clickable {
                 trip.toDestination.let {
@@ -85,9 +88,9 @@ fun TripListItem(trip: Trip, viewModel: SearchResultsViewModel) {
                     }
                 }
             },
-        elevation = 2.dp,
+        elevation = 0.dp,
         backgroundColor = Color.White,
-        shape = RoundedCornerShape(corner = CornerSize(16.dp))
+        shape = RoundedCornerShape(corner = CornerSize(7.dp))
 
     ) {
         Row {
@@ -121,7 +124,7 @@ fun HeartAnimation(trip: Trip, viewModel: SearchResultsViewModel) {
     Icon(
         imageVector = Icons.Outlined.Favorite,
         contentDescription = "Like the trip",
-        tint = if (enabled) Color.Red else Color.LightGray,
+        tint = if (enabled) Purple else Color.LightGray,
         modifier = Modifier
             .scale(scale = scale.value)
             .size(size = 30.dp)
@@ -178,7 +181,7 @@ fun ShareAnimation(trip: Trip, viewModel: SearchResultsViewModel) {
     Icon(
         imageVector = Icons.Outlined.Share,
         contentDescription = "Share the trip",
-        tint = if (enabled) Color.Red else Color.LightGray,
+        tint = if (enabled) Blue else Color.LightGray,
         modifier = Modifier
             .scale(scale = scale.value)
             .size(size = 30.dp)

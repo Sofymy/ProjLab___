@@ -7,9 +7,10 @@ import com.google.firebase.firestore.PropertyName
 data class DestinationTraits(
     @DocumentId
     var name: String,
+    var country: String,
     @get: PropertyName("warm") @set: PropertyName("warm") var warm: Boolean? = false,
     @get: PropertyName("historical") @set: PropertyName("historical") var historical: Boolean? = false,
     @get: PropertyName("capital") @set: PropertyName("capital") var capital: Boolean? = false
 ){
-    constructor() : this("",false, false, false)
+    constructor() : this("","",false, false, false)
 }

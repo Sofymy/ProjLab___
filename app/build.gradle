@@ -131,6 +131,12 @@ dependencies {
     //MAP UTL
     implementation 'com.google.maps.android:android-maps-utils:0.4.4'
 
+    //SHIMMER
+    implementation 'com.valentinilk.shimmer:compose-shimmer:1.0.0'
+
+    //STATUS BAR COLOR
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.27.0"
+
 }
 
 kapt {

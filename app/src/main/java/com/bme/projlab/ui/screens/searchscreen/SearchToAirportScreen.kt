@@ -3,24 +3,32 @@ package com.bme.projlab.ui.screens.searchscreen
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Divider
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ConnectingAirports
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,14 +44,16 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bme.projlab.domain.model.element.Airports
 import com.bme.projlab.domain.viewmodel.SearchAirportViewModel
+import com.bme.projlab.ui.theme.GradientBrush
+import com.bme.projlab.ui.theme.Grey
+import com.bme.projlab.ui.theme.Purple
+import com.bme.projlab.ui.theme.White
 import kotlinx.coroutines.launch
 
 
@@ -55,29 +65,53 @@ fun SearchToAirportScreen(
     toDestination: String,
     fromAirport: String,
 ) {
-    var maxDistance by remember { mutableStateOf(200f) }
-    val coroutineScope = rememberCoroutineScope()
+    var maxDistance by remember { mutableStateOf(100f) }
 
     Column{
-        //Distance
-        Column {
-            Text("Distance")
-            Text(text = maxDistance.toInt().toString())
-            Slider(
-                modifier = Modifier.semantics { contentDescription = "Localized Description" },
-                value = maxDistance,
-                onValueChange = { maxDistance = it
-                                },
-                valueRange = 0f..150f,
-                onValueChangeFinished = {
-                },
-                steps = 15
-            )
-        }
+        Phases(0.8f)
         Scaffold(topBar = {
-            SearchViewToAirport(viewModel, "Which airport are you going to?", toDestination, LocalContext.current, maxDistance)
+            SearchViewToAirport(viewModel,
+                "Which airport are you going to?",
+                toDestination,
+                LocalContext.current,
+                maxDistance)
         }) { padding ->
-            Column(modifier = Modifier.padding(padding)) {
+            Column(
+                modifier = Modifier.padding(padding),
+                ) {
+                Column(
+                    modifier = Modifier.padding(15.dp),
+                ) {
+                    Text(
+                        "Maximum distance from city center",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ){
+                        Text(
+                            text = maxDistance.toInt().toString()+" KM",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                        var max = 200f
+                        Slider(
+                            value = maxDistance,
+                            onValueChange = {
+                                max = it
+                            },
+                            valueRange = 0f..150f,
+                            onValueChangeFinished = {
+                                maxDistance = max
+                            },
+                            steps = 0,
+                            colors = SliderDefaults.colors(
+                                thumbColor = Purple,
+                                Grey,
+                                activeTickColor = Grey
+                            )
+                        )
+                    }
+                }
                 SearchListToAirport(viewModel, onItemClick)
             }
         }
@@ -96,20 +130,28 @@ fun SearchViewToAirport(
     var query by remember { mutableStateOf("") }
     val coroutineScope = rememberCoroutineScope()
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 10.dp)
+            .padding(horizontal = 15.dp)
     ) {
+        Spacer(modifier = Modifier.height(10.dp))
         BasicTextField(
             value = query,
             onValueChange = {
                 query = it
+                coroutineScope.launch {
+                    searchAirportViewModel.performQuery(it, city, context, maxDistance.toInt())
+                }
             },
             modifier = Modifier
-                .height(60.dp)
+                .height(57.dp)
                 .fillMaxWidth()
-                .background(color = Color(0xFFD2F3F2), shape = RoundedCornerShape(size = 16.dp)),
+                .border(1.dp, brush = GradientBrush, shape = RoundedCornerShape(size = 7.dp))
+                .background(
+                    color = White,
+                )
+            ,
             textStyle = TextStyle(
             ),
             singleLine = true,
@@ -120,24 +162,35 @@ fun SearchViewToAirport(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
             maxLines = 1
         ) { innerTextField ->
-            Box(
-                contentAlignment = Alignment.CenterStart
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 17.dp)
             ) {
-                if (query.isEmpty()) {
-                    Text(
-                        text = text,
-                    )
-                    coroutineScope.launch {
-                        searchAirportViewModel.loadAirports(city, context, maxDistance.toInt())
-                    }
-                } else
-                    coroutineScope.launch {
-                        searchAirportViewModel.performQuery(query, city, context, maxDistance.toInt())
-                    }
-                innerTextField()
-
+                Icon(
+                    imageVector = Icons.Default.ConnectingAirports,
+                    tint = MaterialTheme.colorScheme.onBackground,
+                    contentDescription = "Search"
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Box {
+                    if (query.isEmpty()) {
+                        Text(
+                            text = text,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+                        coroutineScope.launch {
+                            searchAirportViewModel.loadAirports(city, context, maxDistance.toInt())
+                        }
+                    } else
+                        coroutineScope.launch {
+                            searchAirportViewModel.performQuery(query, city, context, maxDistance.toInt())
+                        }
+                    Spacer(modifier = Modifier.width(width = 18.dp))
+                    innerTextField()
+                }
             }
         }
+        Spacer(Modifier.height(10.dp))
     }
 }
 
@@ -149,26 +202,36 @@ fun SearchListToAirportItem(
 ) {
     Surface(
         modifier
-            .padding(vertical = 8.dp, horizontal = 8.dp)
+            .padding(vertical = 5.dp, horizontal = 15.dp)
             .clip(MaterialTheme.shapes.medium)
     ) {
-        Row(modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
+        Row {
             Column(modifier = Modifier
-                .clickable(
-                    onClick = {
-                        airportItem.placeId?.let { onItemClick(it) }
-                    })
+                .background(White)
                 .height(70.dp)
+                .padding(15.dp)
+                .clickable {
+                    airportItem.placeId?.let { onItemClick(it) }
+                }
                 .fillMaxWidth()){
                 Text(
                     text = airportItem.placeName,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 20.dp, vertical = 12.dp)
                         .wrapContentWidth(Alignment.Start)
                 )
+                airportItem.placeId?.let {
+                    Text(
+                        text = it,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Grey,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentWidth(Alignment.Start)
+                    )
+                }
             }
         }
     }
@@ -182,14 +245,17 @@ fun SearchListToAirport(
     val list = searchAirportViewModel.list.observeAsState().value
     LazyColumn {
         if (!list.isNullOrEmpty()) {
-            items(list) { fromItem ->
-                SearchListToAirportItem(fromItem
-                ) { fromDestination ->
-                    onItemClick(fromDestination)
+            items(list) { toItem ->
+                SearchListToAirportItem(toItem
+                ) { toAirport ->
+                    onItemClick(toAirport)
                 }
-                Surface(Modifier.padding(horizontal = 24.dp)) {
-                    Divider(
-                    )
+            }
+        }
+        if(list == null){
+            item {
+                for(i in 0..10) {
+                    ShimmerItem()
                 }
             }
         }

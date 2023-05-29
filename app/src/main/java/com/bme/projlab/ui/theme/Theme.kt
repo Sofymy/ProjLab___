@@ -5,19 +5,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 private val DarkColorPalette = darkColorScheme(
     primary = Blue,
-    secondary = Orange,
+    secondary = Purple,
     background = Background,
+    onBackground = Text,
     surface = Blue,
     primaryContainer = Blue
 )
 
 private val LightColorPalette = lightColorScheme(
     primary = Blue,
-    secondary = Orange,
+    secondary = Purple,
     background = Background,
+    onBackground = Text,
     surface = Blue,
     primaryContainer = Blue
 )
@@ -36,4 +39,15 @@ fun AppppppTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composabl
         shapes = Shapes,
         content = content
     )
+
+    val systemUiController = rememberSystemUiController()
+    if(darkTheme){
+        systemUiController.setSystemBarsColor(
+            color = Background
+        )
+    }else{
+        systemUiController.setSystemBarsColor(
+            color = Background
+        )
+    }
 }

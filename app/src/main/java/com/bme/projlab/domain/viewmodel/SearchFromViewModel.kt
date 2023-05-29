@@ -1,10 +1,15 @@
 package com.bme.projlab.domain.viewmodel
 
+import android.location.Address
+import android.location.Geocoder
+import android.util.Log
+import androidx.compose.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bme.projlab.data.repository.DestinationRepositoryImpl
 import com.bme.projlab.domain.model.element.DestinationTraits
+import com.google.android.gms.common.util.CollectionUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.*
 import javax.inject.Inject
@@ -40,4 +45,5 @@ class SearchFromViewModel @Inject constructor(
         }
         return lowercase
     }
+
 }

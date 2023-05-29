@@ -35,6 +35,7 @@ fun SearchDestinationScreen(
     fromAirport: String,
 ) {
     Column{
+        Phases(0.6f)
         Text("Search destination by...")
         Text("Select")
         RadioButtonsDestination(navigateToExact, navigateToPreferences)
@@ -98,116 +99,6 @@ fun RadioGroup(
             }
         }){
             Text("Next")
-        }
-    }
-}
-
-
-@SuppressLint("CoroutineCreationDuringComposition")
-@Composable
-fun SearchViewDestination(
-    searchDestinationViewModel: SearchDestinationViewModel,
-    text: String
-) {
-    var query by remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope()
-    Box(
-        modifier = Modifier.fillMaxWidth()
-            .padding(horizontal = 10.dp)
-    ) {
-        BasicTextField(
-            value = query,
-            onValueChange = {
-                query = it
-                coroutineScope.launch {
-                    searchDestinationViewModel.performQuery(it)
-                }
-            },
-            modifier = Modifier.height(38.dp).fillMaxWidth()
-                .background(color = Color(0xFFD2F3F2), shape = RoundedCornerShape(size = 16.dp)),
-            textStyle = TextStyle(
-            ),
-            singleLine = true,
-            cursorBrush = Brush.verticalGradient(colors = listOf(Color(0xFF000000),
-                Color(0xFF4D4D4D))),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-            maxLines = 1,
-            decorationBox = {innerTextField ->
-                Box(
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    if (query.isEmpty()) {
-                        Text(
-                            text = text,
-                        )
-                        coroutineScope.launch {
-                            searchDestinationViewModel.loadDestinations()
-                        }
-                    }
-                    else
-                        coroutineScope.launch {
-                            searchDestinationViewModel.performQuery(query)                        }
-
-                    innerTextField()
-
-                }
-            })
-    }
-}
-
-@Composable
-fun SearchListItemDestination(
-    destinationItem: Destination,
-    modifier: Modifier = Modifier,
-    onItemClick: (String) -> Unit
-) {
-    Surface(
-        modifier
-            .padding(vertical = 8.dp, horizontal = 8.dp)
-            .clip(MaterialTheme.shapes.medium)
-    ) {
-        Row(modifier.padding(vertical = 8.dp, horizontal = 16.dp)) {
-            Column(modifier = Modifier
-                .clickable(
-                    onClick = {
-                        destinationItem.name?.let { onItemClick(it) }
-                    })
-                .height(57.dp)
-                .fillMaxWidth()){
-                destinationItem.name?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp, vertical = 12.dp)
-                            .wrapContentWidth(Alignment.Start)
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SearchListDestination(
-    searchDestinationViewModel: SearchDestinationViewModel,
-    onItemClick: (String) -> Unit
-){
-    val list = searchDestinationViewModel.list.observeAsState().value
-    LazyColumn {
-        if (!list.isNullOrEmpty()) {
-            items(list) { destinationItem ->
-                SearchListItem(destinationItem
-                ) { fromDestination ->
-                    onItemClick(fromDestination)
-                }
-                Surface(Modifier.padding(horizontal = 24.dp)) {
-                    Divider(
-                    )
-                }
-            }
         }
     }
 }

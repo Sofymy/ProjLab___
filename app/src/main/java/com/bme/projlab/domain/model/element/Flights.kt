@@ -4,8 +4,6 @@ package com.bme.projlab.domain.model.element
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-
-
 data class Flights(
     @SerializedName("data")
     var `data`: List<ReturnFlight>? = emptyList(),
@@ -24,7 +22,6 @@ data class Flights(
         @SerializedName("totalDuration")
         var totalDuration: Int? = 0
     ) {
-        constructor() : this(emptyList(), null, 0.0,0)
         data class Flight(
             @SerializedName("arrival")
             var arrival: String? = "",
@@ -53,9 +50,7 @@ data class Flights(
             var transfer_type: String? = "",
             @Expose
             var update_status: String? = ""
-        ){
-            constructor() : this(0.0,"",0,0.0,"","") {}
-        }
+        )
     }
 }
 

@@ -22,11 +22,17 @@ val Typography = Typography(
     bodyMedium = TextStyle(
         fontFamily = fonts,
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
+        fontSize = 16.sp
     ),
     bodyLarge = TextStyle(
         fontFamily = fonts,
         fontWeight = FontWeight.Normal,
         fontSize = 30.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = fonts,
+        fontWeight = FontWeight.Normal,
+        fontSize = 13.sp
     )
+
 )

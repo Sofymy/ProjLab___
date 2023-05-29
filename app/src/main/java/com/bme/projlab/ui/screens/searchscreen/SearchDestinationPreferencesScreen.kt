@@ -67,46 +67,7 @@ fun SearchDestinationPreferencesScreen(
         Modifier
             .padding(10.dp)
     ) {
-        Text(fromAirport)
-
-        //Price
-        Row {
-            Text("Average prices")
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(10.dp)) {
-                ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded }
-                ) {
-                    TextField(
-                        value = selectedText,
-                        onValueChange = {},
-                        readOnly = true,
-                        trailingIcon = {
-                            ExposedDropdownMenuDefaults.TrailingIcon(
-                                expanded = expanded
-                            )
-                        },
-                        modifier = Modifier.menuAnchor()
-                    )
-                    ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
-                    ) {
-                        categories.forEach { item ->
-                            DropdownMenuItem(
-                                text = { Text(text = item) },
-                                onClick = {
-                                    selectedText = item
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
+        Phases(0.6f)
 
         //First
         Row {
@@ -176,51 +137,6 @@ fun SearchDestinationPreferencesScreen(
                 }
             )
 
-        }
-
-        //Transfer
-        Text("Transfer options")
-        Row (
-            Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
-        ){
-            FilterChip(
-                selected = stateRoad.value,
-                label = {Text("Road")},
-                onClick = { stateRoad.value = !stateRoad.value },
-                modifier = Modifier.alpha(if (stateRoad.value) 1.0f else 0.5f),
-                leadingIcon = if (stateRoad.value) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Done,
-                            contentDescription = "Localized Description",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
-                    }
-                } else {
-                    null
-                }
-            )
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            FilterChip(
-                selected = stateRail.value,
-                label = {Text("Rail")},
-                onClick = { stateRail.value = !stateRail.value },
-                modifier = Modifier.alpha(if (stateRail.value) 1.0f else 0.5f),
-                leadingIcon = if (stateRail.value) {
-                    {
-                        Icon(
-                            imageVector = Icons.Filled.Done,
-                            contentDescription = "Localized Description",
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
-                    }
-                } else {
-                    null
-                }
-            )
         }
 
         //Button

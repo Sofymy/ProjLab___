@@ -1,5 +1,6 @@
 package com.bme.projlab.data.repository
 
+import android.util.Log
 import com.bme.projlab.domain.model.element.Destination
 import com.bme.projlab.domain.model.element.DestinationTraits
 import com.bme.projlab.domain.repository.DestinationRepository
@@ -14,7 +15,8 @@ class DestinationRepositoryImpl @Inject constructor(
 ) : DestinationRepository {
 
     override suspend fun loadDestinations(): ArrayList<DestinationTraits> {
-        return firebaseFirestore.collection("locationtraits")
+        return firebaseFirestore.collection("locations")
             .get().await().toObjects(DestinationTraits::class.java) as ArrayList<DestinationTraits>
     }
+
 }

@@ -1,6 +1,7 @@
 package com.bme.projlab.ui.navigation
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.Colors
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -29,7 +31,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.bme.projlab.ui.theme.Blue
 import com.bme.projlab.ui.theme.Grey
-import com.bme.projlab.ui.theme.Orange
+import com.bme.projlab.ui.theme.Purple
+import com.bme.projlab.ui.theme.GradientBrush
+import com.bme.projlab.ui.theme.TransparentBrush
 import com.bme.projlab.ui.theme.White
 
 sealed class BottomNavItem(
@@ -40,9 +44,9 @@ sealed class BottomNavItem(
         title = BottomNavigationScreens.Home.title,
         icon = Icons.Default.Home,
     )
-    object Search : BottomNavItem(
-        title = BottomNavigationScreens.Search.title,
-        icon = Icons.Default.Search
+    object Trips : BottomNavItem(
+        title = BottomNavigationScreens.Trips.title,
+        icon = Icons.Default.AirplaneTicket
     )
     object Settings : BottomNavItem(
         title = BottomNavigationScreens.Settings.title,
@@ -58,12 +62,6 @@ sealed class BottomNavItem(
 fun BottomNavigationBar(
     navController: NavController
 ) {
-    val items = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.Search,
-        BottomNavItem.Settings,
-        BottomNavItem.Profile
-    )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -76,9 +74,11 @@ fun BottomNavigationBar(
 
     NavigationBar(
         Modifier
-            .padding(15.dp)
+            .background(TransparentBrush)
+            .padding(20.dp)
             .clip(RoundedCornerShape(30.dp))
             .height(60.dp)
+            //.border(width = 0.dp, brush = GradientBrush, shape = RoundedCornerShape(30.dp))
         ,
         containerColor = White,
         )
@@ -92,55 +92,32 @@ fun BottomNavigationBar(
                     )
                 },
                 label = {
-                    Text(text = BottomNavItem.Home.title,
-                        style = MaterialTheme.typography.bodyMedium)
                         },
                 selected = currentRoute == BottomNavItem.Home.title,
                 onClick = {
                     navController.navigate(BottomNavItem.Home.title)
                 },
-                selectedContentColor = Orange,
+                selectedContentColor = Purple,
                 unselectedContentColor = Grey
             )
         BottomNavigationItem(
             alwaysShowLabel = false,
             icon = {
                 Icon(
-                    imageVector = BottomNavItem.Search.icon,
+                    imageVector = BottomNavItem.Trips.icon,
                     contentDescription = ""
                 )
             },
             label = {
-                Text(text = BottomNavItem.Search.title,
-                    style = MaterialTheme.typography.bodyMedium)
             },
-            selected = currentRoute == BottomNavItem.Search.title,
+            selected = currentRoute == BottomNavItem.Trips.title,
             onClick = {
-                navController.navigate(BottomNavItem.Search.title)
+                navController.navigate(BottomNavItem.Trips.title)
             },
-            selectedContentColor = Orange,
+            selectedContentColor = Purple,
             unselectedContentColor = Grey
         )
-        Spacer(modifier = Modifier.width(50.dp))
-        BottomNavigationItem(
-            alwaysShowLabel = false,
-            icon = {
-                Icon(
-                    imageVector = BottomNavItem.Settings.icon,
-                    contentDescription = ""
-                )
-            },
-            label = {
-                Text(text = BottomNavItem.Settings.title,
-                    style = MaterialTheme.typography.bodyMedium)
-            },
-            selected = currentRoute == BottomNavItem.Settings.title,
-            onClick = {
-                navController.navigate(BottomNavItem.Settings.title)
-            },
-            selectedContentColor = Orange,
-            unselectedContentColor = Grey
-        )
+        Spacer(modifier = Modifier.width(70.dp))
         BottomNavigationItem(
             alwaysShowLabel = false,
             icon = {
@@ -150,14 +127,29 @@ fun BottomNavigationBar(
                 )
             },
             label = {
-                Text(text = BottomNavItem.Profile.title,
-                    style = MaterialTheme.typography.bodyMedium)
             },
             selected = currentRoute == BottomNavItem.Profile.title,
             onClick = {
                 navController.navigate(BottomNavItem.Profile.title)
             },
-            selectedContentColor = Orange,
+            selectedContentColor = Purple,
+            unselectedContentColor = Grey
+        )
+        BottomNavigationItem(
+            alwaysShowLabel = false,
+            icon = {
+                Icon(
+                    imageVector = BottomNavItem.Settings.icon,
+                    contentDescription = ""
+                )
+            },
+            label = {
+            },
+            selected = currentRoute == BottomNavItem.Settings.title,
+            onClick = {
+                navController.navigate(BottomNavItem.Settings.title)
+            },
+            selectedContentColor = Purple,
             unselectedContentColor = Grey
         )
     }

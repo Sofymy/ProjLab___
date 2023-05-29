@@ -14,9 +14,7 @@ import com.bme.projlab.ui.screens.HomeFirstScreen
 import com.bme.projlab.ui.screens.LoginScreen
 import com.bme.projlab.ui.screens.ProfileScreen
 import com.bme.projlab.ui.screens.profilescreen.ReceivedTripsScreen
-import com.bme.projlab.ui.screens.searchscreen.SearchDatesScreen
 import com.bme.projlab.ui.screens.searchscreen.SearchDatesExactScreen
-import com.bme.projlab.ui.screens.searchscreen.SearchDatesPreferencesScreen
 import com.bme.projlab.ui.screens.searchscreen.SearchDestinationScreen
 import com.bme.projlab.ui.screens.searchscreen.SearchDestinationExactScreen
 import com.bme.projlab.ui.screens.searchscreen.SearchDestinationPreferencesScreen
@@ -48,9 +46,7 @@ sealed class Routes(val route: String){
     object SearchDestinationPreferences : Routes("SearchDestinationPreferences")
     object SearchDestinationPrefResult: Routes("SearchDestinationPrefResult")
     object SearchToAirport: Routes("SearchToAirport")
-    object SearchDates : Routes("SearchDates")
     object SearchDatesExact : Routes("SearchDatesExact")
-    object SearchDatesPreferences : Routes("SearchDatesPreferences")
     object SearchResults : Routes("SearchResults")
     object TripDetails : Routes("TripDetails")
     object Visited : Routes("Visited")
@@ -144,8 +140,11 @@ fun NavGraphBuilder.loggedinNavGraph(
             TripsScreen()
         }
         composable(Routes.Search.route) {
+            val fromAirport = "CDG"
+            val toAirport = "BUD"
+            val toDestination = "Budapest"
             SearchFromScreen(onItemClick = { fromDestination ->
-                navController.navigate("${Routes.SearchFromAirport.route}/$fromDestination")
+                navController.navigate("${Routes.SearchDatesExact.route}/$fromAirport/$fromDestination/$toAirport/$toDestination")
                 {
                     launchSingleTop = true
                 }
@@ -158,50 +157,54 @@ fun NavGraphBuilder.loggedinNavGraph(
                 SearchFromAirportScreen(
                     fromDestination = fromDestination,
                     onItemClick = { fromAirport ->
-                        navController.navigate("${Routes.SearchDestination.route}/$fromAirport")
+                        navController.navigate("${Routes.SearchDestination.route}/$fromAirport/$fromDestination")
                         {
                             launchSingleTop = true
                         }
                 })
             }
         }
-        composable("${Routes.SearchDestination.route}/{fromAirport}")
+        composable("${Routes.SearchDestination.route}/{fromAirport}/{fromDestination}")
             { navBackStackEntry ->
                 val fromAirport = navBackStackEntry.arguments?.getString("fromAirport")
+                val fromDestination = navBackStackEntry.arguments?.getString("fromDestination")
                 fromAirport?.let {
                     SearchDestinationScreen(
                         fromAirport = fromAirport,
-                        navigateToPreferences = { navController.navigate("${Routes.SearchDestinationPreferences.route}/$fromAirport") },
-                        navigateToExact =  { navController.navigate("${Routes.SearchDestinationExact.route}/$fromAirport") }
+                        navigateToPreferences = { navController.navigate("${Routes.SearchDestinationPreferences.route}/$fromAirport/$fromDestination") },
+                        navigateToExact =  { navController.navigate("${Routes.SearchDestinationExact.route}/$fromAirport/$fromDestination") }
                     )
                 }
             }
-        composable("${Routes.SearchDestinationExact.route}/{fromAirport}")
+        composable("${Routes.SearchDestinationExact.route}/{fromAirport}/{fromDestination}")
         { navBackStackEntry ->
             val fromAirport = navBackStackEntry.arguments?.getString("fromAirport")
+            val fromDestination = navBackStackEntry.arguments?.getString("fromDestination")
             fromAirport?.let {
                 SearchDestinationExactScreen(fromAirport = fromAirport,
                     onItemClick = { toDestination ->
-                        navController.navigate("${Routes.SearchToAirport.route}/$fromAirport/$toDestination")
+                        navController.navigate("${Routes.SearchToAirport.route}/$fromAirport/$fromDestination/$toDestination")
                     }
                 )
             }
         }
-        composable("${Routes.SearchDestinationPreferences.route}/{fromAirport}")
+        composable("${Routes.SearchDestinationPreferences.route}/{fromDestination}/{fromAirport}")
         { navBackStackEntry ->
             val fromAirport = navBackStackEntry.arguments?.getString("fromAirport")
+            val fromDestination = navBackStackEntry.arguments?.getString("fromDestination")
             fromAirport?.let {
                 SearchDestinationPreferencesScreen(fromAirport = fromAirport,
                     navigateToDestinationPrefResults = { b: Boolean, b1: Boolean, b2: Boolean, b3: Boolean ->
-                        navController.navigate("${Routes.SearchDestinationPrefResult.route}/$fromAirport/$b/$b1/$b2/$b3")
+                        navController.navigate("${Routes.SearchDestinationPrefResult.route}/$fromAirport/$fromDestination/$b/$b1/$b2/$b3")
                     }
                 )
             }
         }
 
-        composable("${Routes.SearchDestinationPrefResult.route}/{fromAirport}/{b}/{b1}/{b2}/{b3}")
+        composable("${Routes.SearchDestinationPrefResult.route}/{fromAirport}/{fromDestination}/{b}/{b1}/{b2}/{b3}")
         { navBackStackEntry ->
             val fromAirport = navBackStackEntry.arguments?.getString("fromAirport")
+            val fromDestination = navBackStackEntry.arguments?.getString("fromDestination")
             val capital = navBackStackEntry.arguments?.getString("b").toBoolean()
             val historical = navBackStackEntry.arguments?.getString("b1").toBoolean()
             val warm = navBackStackEntry.arguments?.getString("b2").toBoolean()
@@ -213,71 +216,46 @@ fun NavGraphBuilder.loggedinNavGraph(
                     warm = warm,
                     first = first,
                     navigateToAirport = { toDestination ->
-                        navController.navigate("${Routes.SearchToAirport.route}/$fromAirport/$toDestination")
+                        navController.navigate("${Routes.SearchToAirport.route}/$fromAirport/$fromDestination/$toDestination")
                     }
                 )
             }
         }
 
-        composable("${Routes.SearchToAirport.route}/{fromAirport}/{toDestination}")
+        composable("${Routes.SearchToAirport.route}/{fromAirport}/{fromDestination}/{toDestination}")
         { navBackStackEntry ->
             val fromAirport = navBackStackEntry.arguments?.getString("fromAirport")
+            val fromDestination = navBackStackEntry.arguments?.getString("fromDestination")
             val toDestination = navBackStackEntry.arguments?.getString("toDestination")
             fromAirport?.let {
                 if (toDestination != null) {
                     SearchToAirportScreen(fromAirport = fromAirport, toDestination = toDestination,
                          onItemClick = {toAirport ->
-                            navController.navigate("${Routes.SearchDates.route}/$fromAirport/$toAirport")
+                            navController.navigate("${Routes.SearchDatesExact.route}/$fromAirport/$fromDestination/$toAirport/$toDestination")
                         })
                 }
             }
         }
 
-        composable("${Routes.SearchDates.route}/{fromAirport}/{toAirport}")
+        composable("${Routes.SearchDatesExact.route}/{fromAirport}/{fromDestination}/{toAirport}/{toDestination}")
         { navBackStackEntry ->
             val fromAirport = navBackStackEntry.arguments?.getString("fromAirport")
             val toAirport = navBackStackEntry.arguments?.getString("toAirport")
-            fromAirport?.let {
-                SearchDatesScreen(
-                    fromAirport = fromAirport,
-                    toAirport = toAirport,
-                    navigateToPreferences = {
-                        navController.navigate(Routes.SearchDatesPreferences.route)
-                    },
-                    navigateToExact = {
-                        navController.navigate("${Routes.SearchDatesExact.route}/$fromAirport/$toAirport")
-                    }
-                )
-            }
-        }
-        composable("${Routes.SearchDatesExact.route}/{fromAirport}/{toAirport}")
-        { navBackStackEntry ->
-            val fromAirport = navBackStackEntry.arguments?.getString("fromAirport")
-            val toAirport = navBackStackEntry.arguments?.getString("toAirport")
+            val fromDestination = navBackStackEntry.arguments?.getString("fromDestination")
+            val toDestination = navBackStackEntry.arguments?.getString("toDestination")
             fromAirport?.let {
                 SearchDatesExactScreen (
                     fromAirport = fromAirport,
                     toAirport = toAirport,
+                    fromDestination = fromDestination,
+                    toDestination = toDestination,
                     navigateToResults = { fromDate, toDate ->
                         navController.navigate("${Routes.SearchResults.route}/$fromAirport/$toAirport/$fromDate/$toDate")
                     }
                 )
             }
         }
-        composable("${Routes.SearchDatesPreferences.route}/{fromAirport}/{toAirport}/{fromDate}/{toDate}")
-        { navBackStackEntry ->
-            val fromAirport = navBackStackEntry.arguments?.getString("fromAirport")
-            val toAirport = navBackStackEntry.arguments?.getString("toAirport")
-            fromAirport?.let {
-                SearchDatesPreferencesScreen(
-                    fromAirport = fromAirport,
-                    toAirport = toAirport,
-                    navigateToResults = {
-                        navController.navigate(Routes.SearchResults.route)
-                    }
-                )
-            }
-        }
+
         composable("${Routes.SearchResults.route}/{fromAirport}/{toAirport}/{fromDate}/{toDate}")
         { navBackStackEntry ->
             val fromAirport = navBackStackEntry.arguments?.getString("fromAirport")
