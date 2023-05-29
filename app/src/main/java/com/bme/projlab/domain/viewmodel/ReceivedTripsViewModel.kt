@@ -23,13 +23,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReceivedTripsViewModel @Inject constructor(
-    val receivedTripsRepositoryImpl: ReceivedTripsRepositoryImpl
+    private val receivedTripsRepositoryImpl: ReceivedTripsRepositoryImpl
 ) : ViewModel(){
 
     @SuppressLint("MutableCollectionMutableState")
-    var trips = ArrayList<String>()
+    var trips = ArrayList<Trip>()
 
     suspend fun loadReceivedTrips(): ArrayList<Trip> {
+        trips = receivedTripsRepositoryImpl.loadReceivedTrips()
         return receivedTripsRepositoryImpl.loadReceivedTrips()
     }
 

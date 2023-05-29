@@ -1,6 +1,7 @@
 package com.bme.projlab.data.repository
 
 import android.util.Log
+import com.bme.projlab.domain.model.element.ReceivedTrip
 import com.bme.projlab.domain.model.element.Trip
 import com.bme.projlab.domain.model.response.TripResponse
 import com.bme.projlab.domain.repository.ReceivedTripsRepository
@@ -22,17 +23,19 @@ class ReceivedTripsRepositoryImpl @Inject constructor(
     val firebaseFirestore: FirebaseFirestore
 ) : ReceivedTripsRepository {
 
-    var receivedTripIds = ArrayList<String>()
+    var receivedTripIds = ArrayList<ReceivedTrip>()
     private val receivedTrips = ArrayList<Trip>()
 
     override suspend fun loadReceivedTrips(): ArrayList<Trip> {
         firebaseAuth.currentUser?.uid?.let { it ->
             receivedTripIds = firebaseFirestore.collection("users").document(it)
-                .get().await().get("receivedTrips") as ArrayList<String>
+                .get().await().get("receivedTrips") as ArrayList<ReceivedTrip>
         }
         (receivedTripIds).map { trip ->
-            val receivedTrip = firebaseFirestore.collection("trips").document(trip)
-                .get().await().toObject(Trip::class.java) as Trip
+            val receivedTrip = trip.trip?.let {
+                firebaseFirestore.collection("trips").document(it.toString())
+                    .get().await().toObject(Trip::class.java)
+            } as Trip
             receivedTrips.add(receivedTrip)
         }
         return receivedTrips
