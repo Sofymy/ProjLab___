@@ -26,7 +26,6 @@ class SearchDestinationPreferencesViewModel @Inject constructor(
     ): ArrayList<DestinationTraits> {
         val destinations = destinationRepositoryImpl.loadDestinations()
         if(first){
-            Log.d("eeeeeee", first.toString())
             val visitedLocations = userRepositoryImpl.loadVisitedLocations()
             val iterator = destinations.iterator()
             while(iterator.hasNext()){
@@ -37,16 +36,22 @@ class SearchDestinationPreferencesViewModel @Inject constructor(
                         ) else it.toString()
                     })){
                     iterator.remove()
-                    Log.d("eeeeeee", item.name)
                 }
             }
         }
-        return searchDestinationRepositoryImpl.searchByAttributes(destinations,
+        return replaceUpper(searchDestinationRepositoryImpl.searchByAttributes(destinations,
             stateCapital,
             stateHistorical,
             warm,
-            first
+            first)
         )
+    }
+
+    private fun replaceUpper(dest: ArrayList<DestinationTraits>): ArrayList<DestinationTraits>{
+        for(d in dest){
+            d.name = d.name.capitalize(Locale.ROOT)
+        }
+        return dest
     }
 
 }

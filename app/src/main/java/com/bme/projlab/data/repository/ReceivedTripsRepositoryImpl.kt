@@ -7,6 +7,7 @@ import com.bme.projlab.domain.model.response.TripResponse
 import com.bme.projlab.domain.repository.ReceivedTripsRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
@@ -23,22 +24,28 @@ class ReceivedTripsRepositoryImpl @Inject constructor(
     val firebaseFirestore: FirebaseFirestore
 ) : ReceivedTripsRepository {
 
-    var receivedTripIds = ArrayList<ReceivedTrip>()
     private val receivedTrips = ArrayList<Trip>()
 
     override suspend fun loadReceivedTrips(): ArrayList<Trip> {
+        val receivedTripIds = ArrayList<String>()
+        val trips = ArrayList<Trip>()
         firebaseAuth.currentUser?.uid?.let { it ->
-            receivedTripIds = firebaseFirestore.collection("users").document(it)
-                .get().await().get("receivedTrips") as ArrayList<ReceivedTrip>
+            val receivedTrips = firebaseFirestore.collection("users").document(it)
+                .get().await().get("receivedTrips") as ArrayList<Map<String, String>>
+            receivedTrips.forEach {
+                if(!receivedTripIds.contains(it["trip"])){
+                    it["trip"]?.let { it1 -> receivedTripIds.add(it1) }
+                }
+            }
         }
         (receivedTripIds).map { trip ->
-            val receivedTrip = trip.trip?.let {
-                firebaseFirestore.collection("trips").document(it.toString())
-                    .get().await().toObject(Trip::class.java)
-            } as Trip
-            receivedTrips.add(receivedTrip)
+            Log.d("bbbbbb", trip)
+            val trip = firebaseFirestore.collection("trips").document(trip)
+                .get().await().toObject(Trip::class.java) as Trip
+            trips.add(trip)
         }
-        return receivedTrips
+        return trips
     }
+
 
 }

@@ -48,8 +48,8 @@ sealed class BottomNavItem(
         title = BottomNavigationScreens.Trips.title,
         icon = Icons.Default.AirplaneTicket
     )
-    object Settings : BottomNavItem(
-        title = BottomNavigationScreens.Settings.title,
+    object SettingsAccount : BottomNavItem(
+        title = BottomNavigationScreens.SettingsAccount.title,
         icon = Icons.Default.Settings
     )
     object Profile : BottomNavItem(
@@ -139,15 +139,15 @@ fun BottomNavigationBar(
             alwaysShowLabel = false,
             icon = {
                 Icon(
-                    imageVector = BottomNavItem.Settings.icon,
+                    imageVector = BottomNavItem.SettingsAccount.icon,
                     contentDescription = ""
                 )
             },
             label = {
             },
-            selected = currentRoute == BottomNavItem.Settings.title,
+            selected = currentRoute == BottomNavItem.SettingsAccount.title,
             onClick = {
-                navController.navigate(BottomNavItem.Settings.title)
+                navController.navigate(BottomNavItem.SettingsAccount.title)
             },
             selectedContentColor = Purple,
             unselectedContentColor = Grey

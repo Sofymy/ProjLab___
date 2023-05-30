@@ -23,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReceivedTripsViewModel @Inject constructor(
-    private val receivedTripsRepositoryImpl: ReceivedTripsRepositoryImpl
+    private val receivedTripsRepositoryImpl: ReceivedTripsRepositoryImpl,
+    private val userRepositoryImpl: UserRepositoryImpl
 ) : ViewModel(){
 
     @SuppressLint("MutableCollectionMutableState")
@@ -32,6 +33,11 @@ class ReceivedTripsViewModel @Inject constructor(
     suspend fun loadReceivedTrips(): ArrayList<Trip> {
         trips = receivedTripsRepositoryImpl.loadReceivedTrips()
         return receivedTripsRepositoryImpl.loadReceivedTrips()
+    }
+
+
+    fun heartTrip(trip: Trip) {
+        userRepositoryImpl.heartTrip(trip)
     }
 
 }

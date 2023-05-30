@@ -1,12 +1,16 @@
 package com.bme.projlab.ui.screens.searchscreen
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
@@ -26,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bme.projlab.domain.model.element.DestinationTraits
 import com.bme.projlab.domain.viewmodel.SearchDestinationPreferencesViewModel
+import com.bme.projlab.ui.theme.Grey
+import com.bme.projlab.ui.theme.White
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition", "MutableCollectionMutableState")
@@ -52,23 +58,29 @@ fun SearchDestinationPrefResultScreen(
             first
         )
     }
-    Column {
-        Text("Hello")
-        Text(capital.toString())
-        Text(warm.toString())
-        Text(historical.toString())
-    }
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(15.dp)
     ) {
-        results.value?.let { it ->
-            items(
-                items = it.toArray()
-            ) { it ->
-                if (it != null) {
-                    val dest = it as DestinationTraits
-                    DestinationListItem(destinationTraits = dest) {
-                        navigateToAirport(it)
+        Phases(0.6f)
+        LazyColumn(
+        ) {
+            results.value?.let { it ->
+                items(
+                    items = it.toArray()
+                ) { it ->
+                    if (it != null) {
+                        val dest = it as DestinationTraits
+                        DestinationListItem(destinationTraits = dest) {
+                            navigateToAirport(it)
+                        }
+                    }
+                }
+            }
+            if (results.value == null) {
+                item {
+                    for (i in 0..10) {
+                        ShimmerItem()
                     }
                 }
             }
@@ -83,21 +95,39 @@ fun DestinationListItem(
 ) {
     androidx.compose.material.Card(
         modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 8.dp)
+            .padding(horizontal = 0.dp, vertical = 5.dp)
             .fillMaxWidth(),
-        elevation = 2.dp,
+        elevation = 0.dp,
         backgroundColor = Color.White,
         shape = RoundedCornerShape(corner = CornerSize(16.dp))
 
     ) {
         Row {
-            Column(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .clickable { navigateToToAirport(destinationTraits.name) }
-                    .align(Alignment.CenterVertically)) {
-                Text(text = destinationTraits.name, style = MaterialTheme.typography.caption) }
+            Column(modifier = Modifier
+                .background(White)
+                .height(70.dp)
+                .padding(15.dp)
+                .clickable {
+                    navigateToToAirport(destinationTraits.name)
+                }
+                .fillMaxWidth()){
+                Text(
+                    text = destinationTraits.name,
+                    style = androidx.compose.material3.MaterialTheme.typography.bodyMedium,
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.Start)
+                )
+                Text(
+                    text = destinationTraits.country,
+                    style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                    color = Grey,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.Start)
+                )
+            }
         }
     }
 }

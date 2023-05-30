@@ -1,20 +1,26 @@
 package com.bme.projlab.ui.screens.tripsscreen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -24,10 +30,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AirplaneTicket
+import androidx.compose.material.icons.filled.Flight
 import androidx.compose.material.icons.filled.HeartBroken
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,12 +69,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.bme.projlab.domain.model.element.Flights
 import com.bme.projlab.domain.model.element.Trip
 import com.bme.projlab.domain.viewmodel.TripsViewModel
+import com.bme.projlab.ui.screens.searchscreen.ShimmerResults
 import com.bme.projlab.ui.theme.Blue
 import com.bme.projlab.ui.theme.Grey
 import com.bme.projlab.ui.theme.Purple
 import com.bme.projlab.ui.theme.White
+import com.bme.projlab.ui.theme.shimmerBrush
 import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -78,14 +90,13 @@ fun TripsScreen(
     navigateToReceived: () -> Unit
 ) {
 
-    val trips = remember { mutableStateOf(viewModel.trips.value) }
+    val trips = remember { mutableStateOf<ArrayList<Trip>?>(null) }
 
     LaunchedEffect(trips) {
         trips.value = viewModel.getHeartedTrips()
     }
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
     )
     {
         Spacer(modifier = Modifier.height(10.dp))
@@ -96,7 +107,9 @@ fun TripsScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = Blue
             ),
-            modifier = Modifier.shimmer()
+            modifier = Modifier
+                .shimmer()
+                .align(Alignment.CenterHorizontally)
         ) {
             Text(
                 "Received trips",
@@ -107,7 +120,7 @@ fun TripsScreen(
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .weight(weight =1f, fill = false)) {
+                .weight(weight = 1f, fill = false)) {
             Spacer(modifier = Modifier.height(20.dp))
             Text(
                 "Your saved trips",
@@ -120,20 +133,26 @@ fun TripsScreen(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 0.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                items(
-                    items = trips.value.toArray(),
-                    itemContent = {
-                        if (it != null) {
-                            TripListItem(trips, trip = it as Trip, viewModel)
-                        }
-                    })
+                trips.value?.let { it ->
+                    items(
+                        items = it.toArray(),
+                        itemContent = {
+                            if (it != null) {
+                                TripListItem(trips, trip = it as Trip, viewModel)
+                            } })
+                }
+                if(trips.value == null) {
+                    item {
+                        ShimmerTrips()
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun TripListItem(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: TripsViewModel) {
+fun TripListItem(trips: MutableState<ArrayList<Trip>?>, trip: Trip, viewModel: TripsViewModel) {
     var separatorOffsetY by remember { mutableStateOf<Float?>(null) }
     val cornerRadius = 20.dp
     androidx.compose.material.Card(
@@ -143,9 +162,32 @@ fun TripListItem(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: Tr
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(modifier = Modifier
-                .height(200.dp)
+                .height(280.dp)
                 .padding(15.dp)){
-                Column() {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center) {
+                        trip.fromDestination?.name?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = com.bme.projlab.ui.theme.Text,
+                            )
+                        }
+                        Icon(imageVector = Icons.Filled.Flight,
+                            contentDescription = "",
+                            tint = com.bme.projlab.ui.theme.Text
+                        )
+                        trip.toDestination?.name?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = com.bme.projlab.ui.theme.Text,
+                                modifier = Modifier
+                            )
+                        }
+                    }
                     Spacer(modifier = Modifier.height(20.dp))
                     Text(
                         text = "FLY OUT",
@@ -190,7 +232,8 @@ fun TripListItem(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: Tr
                         separatorOffsetY = it.boundsInParent().center.y
                     }
             )
-            Box(modifier = Modifier.height(80.dp)
+            Box(modifier = Modifier
+                .height(80.dp)
                 .padding(15.dp)
             , contentAlignment = Alignment.Center
             ){
@@ -227,7 +270,7 @@ private fun DestinationImage(trip: Trip) {
 }
 
 @Composable
-fun HeartAnimation(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: TripsViewModel) {
+fun HeartAnimation(trips: MutableState<ArrayList<Trip>?>, trip: Trip, viewModel: TripsViewModel) {
     val interactionSource = MutableInteractionSource()
     val coroutineScope = rememberCoroutineScope()
 
@@ -239,20 +282,17 @@ fun HeartAnimation(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: 
         androidx.compose.animation.core.Animatable(1f)
     }
 
-    Icon(
-        imageVector = Icons.Filled.HeartBroken,
-        contentDescription = "Unlike the trip",
-        tint = if (enabled) Purple else Color.LightGray,
-        modifier = Modifier
+    trips.value?.let {
+        Modifier
             .scale(scale = scale.value)
             .size(size = 30.dp)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                trips.value.remove(trip)
+                it.remove(trip)
             ) {
                 enabled = !enabled
-                trips.value.remove(trip)
+                trips.value!!.remove(trip)
                 viewModel.unHeartTrip(trip)
                 coroutineScope.launch {
                     scale.animateTo(
@@ -265,7 +305,14 @@ fun HeartAnimation(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: 
                     )
                 }
             }
+    }?.let {
+        Icon(
+        imageVector = Icons.Filled.HeartBroken,
+        contentDescription = "Unlike the trip",
+        tint = if (enabled) Purple else Color.LightGray,
+        modifier = it
     )
+    }
 }
 
 class RoundedCutoutShape(
@@ -309,7 +356,7 @@ class RoundedCutoutShape(
     })
 }
 
-private data class DottedShape(
+data class DottedShape(
     val step: Dp,
 ) : Shape {
     override fun createOutline(
@@ -331,4 +378,45 @@ private data class DottedShape(
         }
         close()
     })
+}
+
+
+
+@Composable
+fun ShimmerTrips(
+    modifier: Modifier = Modifier,
+) {
+    var separatorOffsetY by remember { mutableStateOf<Float?>(null) }
+    val cornerRadius = 20.dp
+    androidx.compose.material.Card(
+        shape = RoundedCutoutShape(separatorOffsetY, cornerRadius),
+        backgroundColor = Color.White,
+        modifier = Modifier.padding(0.dp)
+            .fillMaxWidth()
+            .fillMaxHeight()
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Surface(
+                modifier
+                    .width(305.dp)
+                    .padding(vertical = 0.dp, horizontal = 0.dp)
+                    .clip(MaterialTheme.shapes.medium)
+                    .background(brush = shimmerBrush())
+            ) {
+                Column(
+                    modifier = Modifier
+                        .background(White)
+                        .background(shimmerBrush())
+                        .height(385.dp)
+                        .fillMaxWidth()
+                ) {
+                }
+            }
+        }
+
+    }
+
 }

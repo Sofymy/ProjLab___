@@ -3,6 +3,7 @@ package com.bme.projlab.ui.screens.searchscreen
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -11,7 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Favorite
@@ -20,6 +21,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
@@ -33,7 +35,10 @@ import com.bme.projlab.domain.model.element.Destination
 import com.bme.projlab.domain.model.element.Trip
 import com.bme.projlab.domain.viewmodel.SearchResultsViewModel
 import com.bme.projlab.ui.theme.Blue
+import com.bme.projlab.ui.theme.Grey
 import com.bme.projlab.ui.theme.Purple
+import com.bme.projlab.ui.theme.White
+import com.bme.projlab.ui.theme.shimmerBrush
 import kotlinx.coroutines.launch
 
 @SuppressLint("MutableCollectionMutableState", "CoroutineCreationDuringComposition")
@@ -55,56 +60,114 @@ fun SearchResultsScreen(
             fromDate,
             toDate)
     }
-    
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-    ) {
-        results.value?.let { it ->
-            items(
-                items = it.toArray(),
-                itemContent = {
-                    if (it != null) {
-                        val fromDest = Destination(fromAirport)
-                        val toDest = Destination(toAirport)
-                        val trip = Trip(flight = it as Flights.ReturnFlight?, fromDestination = fromDest, toDestination = toDest)
-                        TripListItem(trip = trip, viewModel)
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(15.dp)){
+        Phases(progress = 1.0f)
+        LazyColumn {
+            results.value?.let { it ->
+                items(
+                    items = it.toArray(),
+                    itemContent = {
+                        if (it != null) {
+                            val fromDest = Destination(fromAirport)
+                            val toDest = Destination(toAirport)
+                            val trip = Trip(flight = it as Flights.ReturnFlight?, fromDestination = fromDest, toDestination = toDest)
+                            TripListItem(trip = trip, viewModel)
+                        }
+                    })
+            }
+            if(results.value == null){
+                item {
+                    for(i in 0..10) {
+                        ShimmerResults()
                     }
-                })
+                }
+            }
+            if(results.value?.size  == 0){
+                item {
+                    NoResults()
+                }
+            }
         }
     }
 }
 
 @Composable
-fun TripListItem(trip: Trip, viewModel: SearchResultsViewModel) {
-    androidx.compose.material.Card(
-        modifier = Modifier
-            .padding(horizontal = 8.dp, vertical = 8.dp)
-            .height(70.dp)
-            .fillMaxWidth()
-            .clickable {
-                trip.toDestination.let {
-                    if (it != null) {
-                        it.name?.let { it1 -> Log.d("trip", it1) }
-                    }
-                }
-            },
-        elevation = 0.dp,
-        backgroundColor = Color.White,
-        shape = RoundedCornerShape(corner = CornerSize(7.dp))
-
+fun NoResults(){
+    Surface(
     ) {
         Row {
-            HeartAnimation(trip, viewModel)
-            ShareAnimation(trip, viewModel)
+            Text("Sorry, no results :(",
+                style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+@Composable
+fun TripListItem(trip: Trip, viewModel: SearchResultsViewModel) {
+    Surface(
+        Modifier
+            .padding(vertical = 5.dp, horizontal = 0.dp)
+            .clip(MaterialTheme.shapes.medium)
+    ) {
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth()
-                    .align(Alignment.CenterVertically)) {
-                trip.flight?.let { Text(text = it.price?.amount.toString(), style = MaterialTheme.typography.caption) }
-                trip.flight?.let { it.returnFlight?.get(0)
-                    ?.let { it1 -> it1.departure?.let { it2 -> Text(text = it2, style = MaterialTheme.typography.caption) } } } }
-        }
+                    .background(White)
+                    .height(250.dp)
+                    .padding(15.dp)
+            ) {
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "FLY OUT",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Grey,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.Start)
+                )
+                Text(
+                    "Departure: ${
+                        trip.flight?.returnFlight?.get(0)?.departure
+                            ?.replace("T", " ")
+                    }", style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    "Arrival: ${
+                        trip.flight?.returnFlight?.get(0)?.arrival
+                            ?.replace("T", " ")
+                    }", style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = "FLY BACK",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Grey,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentWidth(Alignment.Start)
+                )
+                Text(
+                    "Departure: ${
+                        trip.flight?.returnFlight?.get(1)?.departure
+                            ?.replace("T", " ")
+                    }", style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    "Arrival: ${
+                        trip.flight?.returnFlight?.get(1)?.arrival
+                            ?.replace("T", " ")
+                    }", style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Text("${trip.flight?.price?.amount} Eur",
+                    style = MaterialTheme.typography.bodyMedium)
+                Spacer(modifier = Modifier.height(20.dp))
+                Row {
+                    Spacer(modifier = Modifier.width(10.dp))
+                    HeartAnimation(trip = trip, viewModel = viewModel)
+                    Spacer(modifier = Modifier.width(10.dp))
+                    ShareAnimation(trip = trip, viewModel = viewModel)
+                }
+            }
     }
 }
 
@@ -328,3 +391,23 @@ private fun AddBody(content: @Composable () -> Unit) {
     }
 }
 
+@Composable
+fun ShimmerResults(
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier
+            .padding(vertical = 5.dp, horizontal = 0.dp)
+            .clip(MaterialTheme.shapes.medium)
+            .background(brush = shimmerBrush())
+    ) {
+        Row {
+            Column(modifier = Modifier
+                .background(White)
+                .background(shimmerBrush())
+                .height(250.dp)
+                .fillMaxWidth()){
+            }
+        }
+    }
+}

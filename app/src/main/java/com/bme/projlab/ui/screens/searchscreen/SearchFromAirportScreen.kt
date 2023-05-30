@@ -56,7 +56,10 @@ fun SearchFromAirportScreen(
     onItemClick: (String) -> Unit,
     fromDestination: String
 ) {
-    Column{
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(15.dp)
+    ){
         Phases(0.4f)
         Scaffold(topBar = {
             SearchViewAirport(viewModel, "Which airport are you going from?", fromDestination)
@@ -81,7 +84,6 @@ fun SearchViewAirport(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 15.dp)
     ) {
         Spacer(modifier = Modifier.height(10.dp))
         BasicTextField(
@@ -150,7 +152,7 @@ fun SearchListAirportItem(
 ) {
     Surface(
         modifier
-            .padding(vertical = 5.dp, horizontal = 15.dp)
+            .padding(vertical = 5.dp, horizontal = 0.dp)
             .clip(MaterialTheme.shapes.medium)
     ) {
         Row {

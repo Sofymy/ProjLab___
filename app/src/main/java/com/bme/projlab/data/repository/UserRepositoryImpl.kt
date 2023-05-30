@@ -29,8 +29,9 @@ class UserRepositoryImpl @Inject constructor(
         var uId = ""
         val data = hashMapOf(
             "username" to firebaseAuth.currentUser?.displayName,
-            "trip" to trip.tripId
+            "trip" to trip.tripId.toString()
         )
+        firebaseFirestore.collection("trips").document(trip.tripId.toString()).set(trip)
         firebaseFirestore.collection("usernames").document(username)
             .get()
             .addOnSuccessListener { result ->

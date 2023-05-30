@@ -59,7 +59,10 @@ fun SearchDestinationExactScreen(
     onItemClick: (String) -> Unit,
     fromAirport: String
 ) {
-    Column{
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(15.dp)
+    ){
         Phases(0.6f)
         Scaffold(topBar = {
             SearchViewDestination(viewModel, "Where would you like to go?")
@@ -83,7 +86,6 @@ fun SearchViewDestination(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 15.dp)
     ) {
         Spacer(modifier = Modifier.height(10.dp))
         BasicTextField(
@@ -152,7 +154,7 @@ fun SearchListItemDestination(
 ) {
     Surface(
         modifier
-            .padding(vertical = 5.dp, horizontal = 15.dp)
+            .padding(vertical = 5.dp, horizontal = 0.dp)
             .clip(MaterialTheme.shapes.medium)
     ) {
         Row {

@@ -1,8 +1,7 @@
-package com.bme.projlab.ui.screens.profilescreen
+package com.bme.projlab.ui.screens.tripsscreen
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,14 +18,10 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.HeartBroken
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -39,7 +34,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -51,7 +45,6 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathOperation
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInParent
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
@@ -62,17 +55,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bme.projlab.domain.model.element.Trip
 import com.bme.projlab.domain.viewmodel.ReceivedTripsViewModel
-import com.bme.projlab.domain.viewmodel.TripsViewModel
-import com.bme.projlab.ui.navigation.Routes
-import com.bme.projlab.ui.theme.Blue
 import com.bme.projlab.ui.theme.Grey
 import com.bme.projlab.ui.theme.Purple
-import com.bme.projlab.ui.theme.White
-import com.valentinilk.shimmer.shimmer
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("CoroutineCreationDuringComposition", "MutableCollectionMutableState")
 @Composable
 fun ReceivedTripsScreen(
@@ -96,7 +83,7 @@ fun ReceivedTripsScreen(
                 .weight(weight =1f, fill = false)) {
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                "Your saved trips",
+                "Received trips",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -196,23 +183,6 @@ fun TripListItem(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: Re
 }
 
 @Composable
-private fun DestinationImage(trip: Trip) {
-    trip.toDestination?.let {
-        it.picture?.let { it1 ->
-            Image(
-                it1,
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .size(84.dp)
-                    .clip(RoundedCornerShape(corner = CornerSize(16.dp)))
-            )
-        }
-    }
-}
-
-@Composable
 fun HeartAnimation(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: ReceivedTripsViewModel) {
     val interactionSource = MutableInteractionSource()
     val coroutineScope = rememberCoroutineScope()
@@ -226,8 +196,8 @@ fun HeartAnimation(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: 
     }
 
     Icon(
-        imageVector = Icons.Filled.HeartBroken,
-        contentDescription = "Unlike the trip",
+        imageVector = Icons.Filled.Favorite,
+        contentDescription = "Like the trip",
         tint = if (enabled) Purple else Color.LightGray,
         modifier = Modifier
             .scale(scale = scale.value)
@@ -235,10 +205,10 @@ fun HeartAnimation(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: 
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
-                trips.value.remove(trip)
             ) {
                 enabled = !enabled
                 trips.value.remove(trip)
+                viewModel.heartTrip(trip)
                 coroutineScope.launch {
                     scale.animateTo(
                         0.8f,
@@ -253,70 +223,7 @@ fun HeartAnimation(trips: MutableState<ArrayList<Trip>>, trip: Trip, viewModel: 
     )
 }
 
-class RoundedCutoutShape(
-    private val offsetY: Float?,
-    private val cornerRadiusDp: Dp,
-) : Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density,
-    ) = Outline.Generic(run path@{
-        val cornerRadius = with(density) { cornerRadiusDp.toPx() }
-        val rect = Rect(Offset.Zero, size)
-        val mainPath = Path().apply {
-            addRoundRect(RoundRect(rect, CornerRadius(cornerRadius)))
-        }
-        if (offsetY == null) return@path mainPath
-        val cutoutPath = Path().apply {
-            val circleSize = Size(cornerRadius, cornerRadius) * 2f
-            val visiblePart = 0.25f
-            val leftOval = Rect(
-                offset = Offset(
-                    x = 0 - circleSize.width * (1 - visiblePart),
-                    y = offsetY - circleSize.height / 2
-                ),
-                size = circleSize
-            )
-            val rightOval = Rect(
-                offset = Offset(
-                    x = rect.width - circleSize.width * visiblePart,
-                    y = offsetY - circleSize.height / 2
-                ),
-                size = circleSize
-            )
-            addOval(leftOval)
-            addOval(rightOval)
-        }
-        return@path Path().apply {
-            op(mainPath, cutoutPath, PathOperation.Difference)
-        }
-    })
-}
 
-private data class DottedShape(
-    val step: Dp,
-) : Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
-    ) = Outline.Generic(Path().apply {
-        val stepPx = with(density) { step.toPx() }
-        val stepsCount = (size.width / stepPx).roundToInt()
-        val actualStep = size.width / stepsCount
-        val dotSize = Size(width = actualStep / 2, height = size.height)
-        for (i in 0 until stepsCount) {
-            addRect(
-                Rect(
-                    offset = Offset(x = i * actualStep, y = 0f),
-                    size = dotSize
-                )
-            )
-        }
-        close()
-    })
-}
 
 
 

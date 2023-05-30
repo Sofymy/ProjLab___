@@ -20,9 +20,11 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.bme.projlab.ui.navigation.*
 import com.bme.projlab.ui.theme.Background
@@ -37,6 +39,15 @@ fun MainScreen(){
     Scaffold(
         backgroundColor = Background,
         floatingActionButton = {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry?.destination?.route
+
+            if (currentRoute == null
+                || currentRoute == Routes.Welcome.route
+                || currentRoute == Routes.Login.route
+                || currentRoute == Routes.Signup.route) {
+                return@Scaffold
+            }
             FloatingActionButton(
                 shape = CircleShape,
                 onClick = {

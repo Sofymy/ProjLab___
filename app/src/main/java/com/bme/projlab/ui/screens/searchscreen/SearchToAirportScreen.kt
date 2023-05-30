@@ -67,7 +67,8 @@ fun SearchToAirportScreen(
 ) {
     var maxDistance by remember { mutableStateOf(100f) }
 
-    Column{
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(15.dp)){
         Phases(0.8f)
         Scaffold(topBar = {
             SearchViewToAirport(viewModel,
@@ -79,9 +80,7 @@ fun SearchToAirportScreen(
             Column(
                 modifier = Modifier.padding(padding),
                 ) {
-                Column(
-                    modifier = Modifier.padding(15.dp),
-                ) {
+                Column {
                     Text(
                         "Maximum distance from city center",
                         style = MaterialTheme.typography.bodyMedium
@@ -133,7 +132,6 @@ fun SearchViewToAirport(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 15.dp)
     ) {
         Spacer(modifier = Modifier.height(10.dp))
         BasicTextField(
@@ -202,7 +200,7 @@ fun SearchListToAirportItem(
 ) {
     Surface(
         modifier
-            .padding(vertical = 5.dp, horizontal = 15.dp)
+            .padding(vertical = 5.dp, horizontal = 0.dp)
             .clip(MaterialTheme.shapes.medium)
     ) {
         Row {

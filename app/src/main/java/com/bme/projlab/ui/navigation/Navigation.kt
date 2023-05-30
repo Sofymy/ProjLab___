@@ -13,7 +13,7 @@ import com.bme.projlab.ui.screens.HomeScreen
 import com.bme.projlab.ui.screens.HomeFirstScreen
 import com.bme.projlab.ui.screens.LoginScreen
 import com.bme.projlab.ui.screens.ProfileScreen
-import com.bme.projlab.ui.screens.profilescreen.ReceivedTripsScreen
+import com.bme.projlab.ui.screens.tripsscreen.ReceivedTripsScreen
 import com.bme.projlab.ui.screens.searchscreen.SearchDatesExactScreen
 import com.bme.projlab.ui.screens.searchscreen.SearchDestinationScreen
 import com.bme.projlab.ui.screens.searchscreen.SearchDestinationExactScreen
@@ -132,8 +132,14 @@ fun NavGraphBuilder.loggedinNavGraph(
         composable(Routes.Profile.route) {
             ProfileScreen(
                 navigateToBadges = { navController.navigate(Routes.Badges.route) },
-                navigateToReceivedTrips = { navController.navigate(Routes.ReceivedTrips.route) },
-                navigateToVisited = { navController.navigate(Routes.Visited.route) }
+                navigateToVisited = { navController.navigate(Routes.Visited.route) },
+                navigateToWelcome = {
+                    navController.navigate(Routes.Welcome.route){
+                        popUpTo(route = ENTRANCE_GRAPH_ROUTE) {
+                            inclusive = true
+                        }
+                    }
+                }
             )
         }
         composable(Routes.Trips.route) {
@@ -145,11 +151,8 @@ fun NavGraphBuilder.loggedinNavGraph(
             }
         }
         composable(Routes.Search.route) {
-            val fromAirport = "CDG"
-            val toAirport = "BUD"
-            val toDestination = "Budapest"
             SearchFromScreen(onItemClick = { fromDestination ->
-                navController.navigate("${Routes.SearchDatesExact.route}/$fromAirport/$fromDestination/$toAirport/$toDestination")
+                navController.navigate("${Routes.SearchFromAirport.route}/$fromDestination")
                 {
                     launchSingleTop = true
                 }
